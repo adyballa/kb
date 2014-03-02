@@ -1,0 +1,481 @@
+{
+    "jQuery.plugins.book.navigation.iscroll.detectDirection": {
+        "files": [
+            "jQuery/lib/parallax/detectDirection/book.js"
+        ],
+        "tasks": [ "jQuery.plugins.parallax.book.navigation", "detectDirection" ],
+        "grunts": {
+            "jshint": false,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "jQuery.plugins.book.navigation.transform.detectDirection": {
+        "files": [
+            "lib/node/scroll/transform.js",
+            "jQuery/plugins/scroll/pager/transform/easing.js",
+            "jQuery/plugins/scroll/pager/transform/navigation.js",
+            "jQuery/lib/parallax/transform/simple.js",
+            "jQuery/lib/parallax/transform/book.js",
+            "jQuery/lib/parallax/detectDirection/book.js"
+        ],
+        "tasks": [ "jQuery.plugins.parallax.book.navigation", "jQuery.plugins.parallax.book.iscroll", "detectDirection" ],
+        "grunts": {
+            "jshint": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "jQuery.plugins.book.navigation.scroll.detectDirection": {
+        "files": [
+            "jQuery/lib/parallax/detectDirection/book.js"
+        ],
+        "tasks": [ "jQuery.plugins.parallax.book.navigation", "detectDirection" ],
+        "grunts": {
+            "jshint": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "jQuery.plugins.scroll.navigation.iscroll": {
+        "files": [
+            "jQuery/plugins/scroll/pager/iscroll/navigation.js",
+            "jQuery/lib/parallax/navigation/iscroll/book.js",
+            "jQuery/lib/parallax/navigation/iscroll/simple.js",
+            "jQuery/plugins/scroll/pager/easing/iscroll/navigation.js"
+        ],
+        "tasks": [ "jQuery.plugins.scroll.pager.iscroll" ],
+        "grunts": {
+            "jshint": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "jQuery.plugins.scroll.navigation.intervall": {
+        "files": [
+            "jQuery/plugins/scroll/pager/intervall/navigation.js"
+        ],
+        "tasks": [ "jQuery.plugins.scroll.navigation", "jQuery.lib.intervall" ],
+        "grunts": {
+            "jshint": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "jQuery.plugins.scroll.pager.iscroll": {
+        "files": [
+            "jQuery/plugins/scroll/iscroll/pager.js"
+        ],
+        "tasks": [ "jQuery.plugins.scroll.pager", "node.iscroll" ],
+        "grunts": {
+            "jshint": true,
+            "jsdoc": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "plugins.scroll.pager": {
+        "files": [
+            "plugins/scroll/pager.js",
+            "jQuery/plugins/scroll.js",
+            "lib/node/scroll/loop.js",
+            "lib/node/scroll/loop/bounce.js",
+            "lib/node/scroll/loop/smooth.js",
+            "lib/node/scroll/loop/smoothplaceholder.js",
+            "jQuery/plugins/scroll/pager/easing/navigation.js"
+        ],
+        "tasks": [ "core", "plugins.jQuery", "nodes", "easing" ],
+        "grunts": {
+            "jshint": true,
+            "jsdoc": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "jQuery.plugins.scroll.pager": {
+        "files": [
+            "jQuery/plugins/scroll/pager.js",
+            "jQuery/plugins/scroll.js",
+            "lib/node/scroll/loop.js",
+            "lib/node/scroll/loop/bounce.js",
+            "lib/node/scroll/loop/smooth.js",
+            "lib/node/scroll/loop/smoothplaceholder.js",
+            "jQuery/plugins/scroll/pager/easing/navigation.js"
+        ],
+        "tasks": [ "core", "plugins.jQuery", "nodes", "easing" ],
+        "grunts": {
+            "jshint": true,
+            "jsdoc": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "jQuery.plugins.scroll.navigation": {
+        "files": [ "jQuery/plugins/scroll/pager/navigation.js" ],
+        "tasks": [ "jQuery.plugins.scroll.pager" ],
+        "grunts": {
+            "jshint": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "jQuery.plugins.parallax.book.iscroll.navigation": {
+        "files": [ ],
+        "tasks": [
+            "jQuery.plugins.parallax.book.iscroll",
+            "jQuery.plugins.parallax.book.navigation",
+            "jQuery.plugins.scroll.navigation.iscroll"
+        ],
+        "grunts": {
+            "jshint": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "jQuery.plugins.parallax.book.iscroll": {
+        "files": [ "jQuery/plugins/parallax/iscroll/book.js",
+            "jQuery/lib/parallax/iscroll/book.js",
+            "jQuery/lib/parallax/actor/iscroll/chapter.js",
+            "jQuery/lib/parallax/actor/iscroll/isNextClone.js",
+            "jQuery/lib/parallax/state/chapter/iscroll/abstract.js",
+            "jQuery/lib/parallax/state/chapter/iscroll/isIn.js",
+            "jQuery/lib/parallax/state/chapter/iscroll/isNext.js",
+            "jQuery/lib/parallax/state/chapter/iscroll/isUnder.js",
+            "jQuery/lib/parallax/state/chapter/iscroll/isActive.js"
+        ],
+        "tasks": [ "jQuery.plugins.parallax.iscroll", "jQuery.plugins.parallax.book" ],
+        "grunts": {
+            "jshint": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "jQuery.plugins.parallax.iscroll": {
+        "files": [ "jQuery/plugins/iscroll/parallax.js",
+            "jQuery/lib/parallax/iscroll.js",
+            "jQuery/lib/parallax/iscroll/simple.js",
+            "lib/cache.js"],
+        "tasks": [ "jQuery.plugins.parallax", "node.iscroll" ],
+        "grunts": {
+            "jshint": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "jQuery.plugins.parallax.iscroll.navigation": {
+        "files": [ "jQuery/lib/parallax/navigation/simple.js", "jQuery/lib/parallax/iscroll/simple.js" ],
+        "tasks": [ "jQuery.plugins.parallax.iscroll" , "jQuery.plugins.scroll.navigation.iscroll" ],
+        "grunts": {
+            "jshint": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "jQuery.plugins.parallax.navigation": {
+        "files": [ "jQuery/lib/parallax/navigation/simple.js", "jQuery/lib/parallax/navigation.js"],
+        "tasks": [ "jQuery.plugins.parallax", "jQuery.plugins.scroll.navigation" ],
+        "grunts": {
+            "jshint": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "jQuery.plugins.parallax": {
+        "files": [
+            "jQuery/lib/parallax.js",
+            "jQuery/lib/parallax/abstract.js",
+            "jQuery/lib/parallax/actor.js",
+            "jQuery/lib/parallax/error.js",
+            "jQuery/lib/parallax/simple.js", "jQuery/lib/parallax/state.js",
+            "jQuery/plugins/parallax.js", "jQuery/lib/parallax/actor.js", "jQuery/lib/parallax/state.js",
+            "jQuery/lib/parallax/actor/abstract.js", "jQuery/lib/parallax/actor/parent.js", "jQuery/lib/parallax/actor/background.js", "jQuery/lib/parallax/actor/position.js", "jQuery/lib/parallax/actor/video.js",
+            "jQuery/lib/parallax/state/abstract.js", "jQuery/lib/parallax/state/isIn.js", "jQuery/lib/parallax/state/isOver.js", "jQuery/lib/parallax/state/isUnder.js", "jQuery/lib/parallax/state/isActive.js", "jQuery/lib/parallax/state/null.js"
+        ],
+        "tasks": [ "core", "plugins.jQuery", "nodes", "composite" ],
+        "grunts": {
+            "jshint": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "jQuery.plugins.parallax.book.navigation": {
+        "files": [ "jQuery/lib/parallax/navigation/book.js"],
+        "tasks": [ "jQuery.plugins.scroll.navigation", "jQuery.plugins.parallax.book", "collection" ],
+        "grunts": {
+            "jshint": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "jQuery.plugins.parallax.book": {
+        "files": [ "jQuery/lib/parallax/book.js", "jQuery/lib/parallax/actor/chapter.js",
+            "jQuery/lib/parallax/state/chapter/abstract.js", "jQuery/lib/parallax/state/chapter/isIn.js", "jQuery/lib/parallax/state/chapter/isOver.js", "jQuery/lib/parallax/state/chapter/isUnder.js",
+            "jQuery/lib/parallax/state/chapter/isNext.js", "jQuery/lib/parallax/state/chapter/null.js", "jQuery/lib/parallax/state/chapter/isActive.js",
+            "lib/cache.js"],
+        "tasks": [ "core", "plugins.jQuery", "node", "composite", "jQuery.plugins.parallax" ],
+        "grunts": {
+            "jshint": true,
+            "jsdoc": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "jQuery.lib.intervall": {
+        "files": [ "jQuery/lib/intervall.js" ],
+        "tasks": [ "core", "plugins.jQuery", "nodes", "easing" ],
+        "grunts": {
+            "jshint": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "flipBook.jQuery": {
+        "files": [ "jQuery/plugins/flipBook.js" ],
+        "tasks": [ "flipBook", "plugins.jQuery" ],
+        "grunts": {
+            "jshint": true,
+            "concat": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "uglify": true
+        }
+    },
+    "flipBook": {
+        "files": [ "plugins/flipBook.js" ],
+        "tasks": [ "core", "plugins" ],
+        "grunts": {
+            "jshint": true,
+            "jsdoc": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "test": {
+        "files": [ "lib/test.js", "lib/test.js" ],
+        "tasks": [ "core" ],
+        "grunts": {
+            "jshint": true,
+            "jsdoc": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "clearDir": true
+        }
+    },
+    "detectDirection": {
+        "files": [ "lib/observer.js", "lib/detect.js", "lib/detect/direction.js" ],
+        "tasks": [ "core" ],
+        "grunts": {
+            "jshint": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false
+        }
+    },
+    "easing": {
+        "files": [
+            "external_libs/jquery.effects.core.js",
+            "core/easing.js",
+            "core/easing/abstract.js",
+            "core/easing/jQuery.js",
+            "core/easing/free.js"
+        ],
+        "tasks": [ "core", "core.jQuery" ],
+        "grunts": {
+            "jshint": ["core/easing.js"],
+            "jsdoc": true,
+            "concat": true,
+            "uglify": true,
+            "removeDbgs": true,
+            "jasmine": false
+        }
+    },
+    "core.iscroll": {
+        "files": [ "external_libs/iscroll/iscroll4.17.js" ],
+        "grunts": {
+            "jshint": false,
+            "concat": true,
+            "uglify": true,
+            "jasmine": false
+        }
+    },
+    "core.jQuery": {
+        "files": [ "external_libs/jquery-1.8.2.js", "jQuery/core.js" ],
+        "grunts": {
+            "jshint": ["jQuery/core.js"],
+            "concat": true,
+            "uglify": true,
+            "jasmine": false
+        }
+    },
+    "plugins.jQuery": {
+        "files": [ "jQuery/plugins/fabric.js" ],
+        "tasks": [ "core.jQuery", "plugins" ],
+        "grunts": {
+            "jshint": true,
+            "concat": true,
+            "uglify": true,
+            "jasmine": false
+        }
+    },
+    "plugins": {
+        "files": [ "plugins/fabric.js" ],
+        "tasks": [ "node" ],
+        "grunts": {
+            "jshint": true,
+            "concat": true,
+            "uglify": true,
+            "jasmine": false
+        }
+    },
+    "node.iscroll": {
+        "files": [ "lib/node/scroll/iscroll.js" ],
+        "tasks": [ "node", "core.iscroll" ],
+        "grunts": {
+            "jshint": false,
+            "jsdoc": true,
+            "concat": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "uglify": true
+        }
+    },
+    "nodes": {
+        "files": [ "lib/nodes.js", "lib/csss.js" ],
+        "tasks": [ "core", "node" ],
+        "grunts": {
+            "jshint": true,
+            "jsdoc": true,
+            "concat": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "uglify": true
+        }
+    },
+    "composite": {
+        "files": [ "lib/composite.js" ],
+        "tasks": [ "core" ],
+        "grunts": {
+            "jshint": true,
+            "jsdoc": true,
+            "concat": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "uglify": true
+        }
+    },
+    "collection": {
+        "files": [ "lib/collection.js" ],
+        "tasks": [ "core" ],
+        "grunts": {
+            "jshint": true,
+            "jsdoc": true,
+            "concat": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "uglify": true
+        }
+    },
+    "node": {
+        "files": [ "lib/node.js", "lib/css.js", "lib/point.js", "lib/node/scroll.js" , "lib/node/bind.js" ],
+        "tasks": [ "core" ],
+        "grunts": {
+            "jshint": true,
+            "jsdoc": true,
+            "concat": true,
+            "removeDbgs": true,
+            "jasmine": false,
+            "uglify": true
+        }
+    },
+    "core": {
+        "files": [ "core/core.js", "core/fabric.js", "core/event.js", "core/console.js", "core/error.js", "core/util.js", "core/ajax.js", "core/convert.js" ],
+        "grunts": {
+            "jshint": true,
+            "jsdoc": true,
+            "concat": true,
+            "uglify": true,
+            "jasmine": false
+        }
+    },
+    "dev": {
+        "files": [ "core/dev/dbg.js" ],
+        "grunts": {
+            "jshint": false,
+            "jsdoc": true,
+            "concat": false,
+            "uglify": false,
+            "jasmine": false
+        }
+    },
+    "all": {
+        "files": [],
+        "tasks": [],
+        "grunts": {
+            "jshint": true,
+            "jsdoc": true,
+            "concat": true,
+            "uglify": true,
+            "jasmine": false
+        }
+    }
+}

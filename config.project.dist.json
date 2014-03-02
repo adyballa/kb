@@ -1,0 +1,7 @@
+{
+"modules" : {},
+"settings" : {
+    "server" : "http://localhost:50009",
+    "root" : "/gdJavascript"
+}
+}

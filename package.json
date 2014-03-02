@@ -1,0 +1,46 @@
+{
+  "name": "Klingbim-javascript-lib",
+  "version": "1.0.0",
+  "devDependencies": {
+    "grunt-contrib-concat": "~0.2.0",
+    "grunt-contrib-uglify": "~0.2.0",
+    "grunt-s3": "~0.2.0-alpha",
+    "grunt": "~0.4.1",
+    "grunt-contrib-jasmine": "~0.5.2",
+    "grunt-contrib-jshint": "~0.4.3",
+    "grunt-contrib-connect": "~0.5.0",
+    "grunt-template-jasmine-requirejs": "~0.1.8",
+    "grunt-jsdoc": "~0.4.2"
+  },
+  "readmeFilename": "readMe.txt",
+  "gitHead": "73e5734a0cc615dc7f12080939b302960ce030bb",
+  "description": "TODO: \r + Fehler und DBGs ueber eigene NS-Objekte enbinden\r + JQuery-GD NS einfuehren\r + Parallax animate\r + Prechecking\r + jsdoc: @var durch property oder type ersetzen\r + Eigenschaften mit prototype statisch? (Noch nicht ganz klar, wohl ja)\r + JS-Doc",
+  "main": "core.js",
+  "directories": {
+    "doc": "doc",
+    "example": "examples"
+  },
+  "dependencies": {
+    "grunt": "~0.4.0rc2",
+    "grunt-contrib-concat": "~0.2.0",
+    "grunt-contrib-jshint": "~0.4.3",
+    "grunt-contrib-jasmine": "~0.5.2",
+    "grunt-contrib-uglify": "~0.2.0",
+    "shelljs": "*",
+    "markdown": "*",
+    "grunt-contrib-qunit": "*",
+    "grunt-jasmine-runner": "*",
+    "grunt-contrib-cssmin": "*",
+    "grunt-contrib-connect": "*",
+    "grunt-lib-phantomjs": "*"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://root@192.168.1.132/var/git/gdJavascript"
+  },
+  "author": "adyballa",
+  "license": "BSD"
+}

@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Constructors and Objects</title>
+<script type="text/javascript">
+    var CONFIG = {
+        general : {
+            verbose : true
+        },
+        Core : {
+            Dbg : {
+                showDevSAJAXErrors : false
+            }
+        }
+    };
+</script>
+<script type="text/javascript" src="../main.js" data-config="CONFIG" data-task="example.constructors">
+</script>
+<!-- script type="text/javascript" src="/kb/sleep.php?milliSeconds=200" ></script -->
+<script type="text/javascript">
+var LIB = "GD";
+console.log(GD.Core.Convert.bool(1));
+//GD.Core.Util.ucFirst("tztzt");
+/*
+(function(global){
+    "use strict";
+    
+    var ns = global[LIB].NS('Core', 'Di', {});
+    
+    ns.constructor = function(){
+        var res = {
+			__ : {
+			},
+			
+			_ : {
+			}
+        };
+        
+        return res;
+    };
+    
+    ns.prototype = {
+            pubA : function(){
+                
+            }
+    }
+}(this))
+
+
+(function(di){
+    
+}(this[LIB].Di))
+*/
+</script>
+</head>
+<body>
+
+</body>
+</html>
