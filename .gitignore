@@ -1,3 +1,4 @@
 *.settings
 *.project
 config.project.json
+node_modules/*
