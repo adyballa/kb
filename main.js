@@ -188,6 +188,7 @@
             this.client.send();
             this.definition = JSON.parse(this.client.responseText);
             this.settings = this.definition['settings'];
+            global.__LIB__ = this.settings.libname; 
         },
 
         /**

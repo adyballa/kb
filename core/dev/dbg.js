@@ -30,6 +30,30 @@
         verbose : true,
         fStackOutput : true,
         fFullTrace : false
+    },
+
+    /**
+     * Erzeugt eine DebugFunktion
+     * 
+     * @memberOf GD.Core.Dbg
+     * @function
+     * @private
+     * 
+     * @param {Objekt} obj Auzugebendes Objekt
+     * @param {boolean} fForce Wird die Ausgabe erzwungen?
+     */
+    _createFct = function(verbose, fct) {
+        if(verbose){
+            return function(mssg){
+                fct(mssg);
+            };
+        }else{
+            return function(mssg, fForce){
+                if(fForce){
+                    fct(mssg);
+                }
+            };
+        }
     };
 
     GD.NS('Core', 'Dbg', config);
@@ -107,6 +131,26 @@
     };
 
     /**
+     * fuegt einem Objekt die Faehigkeit "debuggen" hinzu.
+     * Das sind die Methoden: dbg, info, warn, dir, dirArr, trace
+     * @memberOf GD.Core.Dbg
+     * 
+     * @param {Objekt} obj Objekt erhaelt debugging-Faehigkeit
+     * @param {boolean} fForce Wird die Ausgabe erzwungen?
+     */
+    GD.Core.Dbg.mixin = function(obj) {
+        obj.dbg = _createFct(obj.config.verbose, GD.Core.Console.dbg);
+        obj.info = _createFct(obj.config.verbose, GD.Core.Console.info);
+        obj.warn = _createFct(obj.config.verbose, GD.Core.Console.warn);
+        obj.dir = _createFct(obj.config.verbose, GD.Core.Console.dir);
+        obj.dirArr = _createFct(obj.config.verbose, GD.Core.Console.arr);
+        obj.trace = _createFct(obj.config.verbose, function(mssg){
+            console.info(mssg);
+            console.trace();
+        });
+    };
+
+    /**
      * Gibt ein Array in die Konsole aus
      * @memberOf GD.Core.Dbg
      * 
@@ -121,7 +165,13 @@
             GD.Core.Console.dir(arr[i]);
         }
     };
-    
+
+    /**
+     * Gibt den Stack zurueck
+     *
+     * @param offset
+     * @returns
+     */
     GD.Core.Dbg.getStack = function(offset)
     {
         var _createFct = function(){
@@ -133,7 +183,7 @@
 //              this.stack = stack.join("\n");|
                 var err = new Error();
                 GD.Core.Dbg.Stack = err.stack.trim().split("\n").map(function(line){
-                    var res = line.match(new RegExp("^([^@\/]+)(\/<)?@(.+)"+GD.Config.Core.root+"(.+):(.+)$"));
+                    var res = line.match(new RegExp("^([^@]*?)(\/<)?@(.+)"+GD.Config.Core.root+"(.+):(.+)$"));
                     if(res){
                         res = {'line' : res[5], 'file' : res[4], 'fct' : res[1]};
                         res.toString = function(){

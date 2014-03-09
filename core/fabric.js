@@ -7,31 +7,99 @@
     "use strict";
     
     /**
-     * Ein GD-Namensraum
-     * @name NS
+     * creates Object
      * @memberOf GD.Core.Fabric
      * @function
+     * @private
+     *
+     * @param {Function} ns
+     * @param {Object} props
+     * @param {Function} initProperties
+     * @param {Object} objConfig
      * @returns {Object} GD-Object
      */
+    var _create = function(ns, props, initProperties, objConfig, constructParams){
+        var proto = ('prototype' in ns) ? ns.prototype : {},
+                ctx = Object.create((proto === undefined) ? {} : proto, props);
+        /*
+         * Ueberschreibt NS-Config mit object-settings NS-Config ist schon durch
+         * den Configure gelaufen
+         */
+        ctx.config = GD.extend(ns.config);
+        GD.extend(objConfig, ctx.config, true);
 
-    var openPrivacy = function (_, ns, ctx, proto) {
-        var _openPrivacy = function (func) {
-            ctx[ns.openMethods[i]] = function () {
-                ctx._ = _;
-                var res = proto[func].apply(ctx, arguments);
-                ctx._ = null;
-                return res;
-            };
-        };
-
-        if ('openMethods' in ns) {
-            var i = ns.openMethods.length, func;
-            while (i--) {
-                _openPrivacy(ns.openMethods[i]);
-                ctx[ns.openMethods[i]].func = func;
-            }
-
+        if ('constructor' in ns) {
+            /*
+             * Im Constructor koennen wieder Objekte erzeugt werden deshalb wird
+             * die statische private Variable, erst spaeter gesetzt.
+             */
+            ns.constructor.apply(ctx, constructParams);
         }
+
+        initProperties(ctx);
+        ctx = _inherit(ns, ctx, ctx.config, constructParams);
+        
+        if ('register' in ns && ns.register) {
+            GD.register(ctx);
+        }
+
+        return ctx;
+    },
+    
+
+    /**
+     * inherits Object not the prototype
+     * @memberOf GD.Core.Fabric
+     * @function
+     * @private
+     *
+     * @param {Function} ns current Namespace
+     * @param {Object} obj zu erweiterndes Objekt
+     * @param {Object} config Konfigurationsobjekt
+     * @param {Array} constructParams
+     */
+    _inherit = function(ns, obj, config, constructParams){
+        var parent = {};
+        for(var i = 0, j = ns.parents.length; i < j; i++){
+            parent = _create(
+                        ns.parents[i], 
+                        ('properties' in ns.parents[i]) ? ns.parents[i].properties : {}, 
+                        ns.parents[i].fabric.initProperties, 
+                        config, 
+                        constructParams);
+            obj = GD.extend(parent, obj, true, true);
+            obj.parent = parent;
+        }
+//        if('parent' in ns){
+//            obj.parent = ns.parent;
+//        }
+        return obj;
+    },
+
+    /**
+     * Standard-mixins fuer alle Objekte
+     * @memberOf GD.Core.Fabric
+     * @function
+     * @private
+     *
+     * @param {Object} obj
+     */
+    _mixin = function(obj){
+        if(GD.isRunning('development')){
+            GD.Core.Dbg.mixin(obj);
+        }
+    },
+    
+    /**
+     * Standard-mixins fuer alle NS
+     * @memberOf GD.Core.Fabric
+     * @function
+     * @private
+     *
+     * @param {Function} ns
+     */
+    _mixinNS = function(ns){
+        
     };
 
     /**
@@ -104,19 +172,42 @@
     };
 
     /**
-     * Setzt Namespace
-     * @memberOf GD.Plugins.Fabric
+     * Mixt source in dest.
+     * Ein Objekt(source) uebergibt Eigenschaften einem anderen(dest).
+     * 
+     * @memberOf GD.Core.Fabric
+     * 
+     * @param dest Ziel-objekt
+     * @param source Quell-objekt
+     * @param fOverride
+     */
+    GD.Core.Fabric.mixin = function(dest, source, fOverride){
+        for(var i in source){
+            if(source.hasOwnProperty(i) && (fOverride || !(i in dest))){
+                dest[i] = source[i];
+            }
+        }
+    };
+
+    /**
+     * Existiert GD-NS?
+     * @memberOf GD.Core.Fabric
      * 
      * @param {Array} nsPath
-     * @param {boolean} fForce NameSpace wird erzwungen, heißt wenn nicht vorhanden,
-     *            wird es gebaut
+     * @returns {boolean}
      */
-    GD.Core.Fabric.prototype.setNS = function(nsPath, fForce) {
-        this.nsPath = nsPath;
-        if (typeof this.nsPath[this.nsPath - 1] === "object") {
-            this.objConfig = this.nsPath.pop();
+    GD.Core.Fabric.NSExists = function(nsPath) {
+        var clss = GD, param = "", i = 0, params = [];
+        for (i = 0; i < nsPath.length; i++) {
+            param = nsPath[i];
+            params.push(param);
+            if (param in clss) {
+                clss = clss[param];
+            } else {
+                return false;
+            }
         }
-        this.ns = this.getNS(this.nsPath, fForce);
+        return true;
     };
 
     /**
@@ -145,6 +236,22 @@
     };
 
     /**
+     * Setzt Namespace
+     * @memberOf GD.Plugins.Fabric
+     * 
+     * @param {Array} nsPath
+     * @param {boolean} fForce NameSpace wird erzwungen, heißt wenn nicht vorhanden,
+     *            wird es gebaut
+     */
+    GD.Core.Fabric.prototype.setNS = function(nsPath, fForce) {
+        this.nsPath = nsPath;
+        if (typeof this.nsPath[this.nsPath - 1] === "object") {
+            this.objConfig = this.nsPath.pop();
+        }
+        this.ns = this.getNS(this.nsPath, fForce);
+    };
+
+    /**
      * erzeugt Namensraum
      * @memberOf GD.Core.Fabric
      * @private
@@ -153,29 +260,14 @@
      * @returns {GD.Core.Fabric.NS} ns Namensraum
      */
     GD.Core.Fabric.prototype.createNS = function(nsPath) {
-        return function() {
+        var res = function() {
+            var fabric = GD.Fabric.apply(GD, nsPath);
+            return fabric.exporting.apply(fabric, arguments);
         };
-    };
-
-    /**
-     * Existiert GD-NS?
-     * @memberOf GD.Core.Fabric
-     * 
-     * @param {Array} nsPath
-     * @returns {boolean}
-     */
-    GD.Core.Fabric.NSExists = function(nsPath) {
-        var clss = GD, param = "", i = 0, params = [];
-        for (i = 0; i < nsPath.length; i++) {
-            param = nsPath[i];
-            params.push(param);
-            if (param in clss) {
-                clss = clss[param];
-            } else {
-                return false;
-            }
-        }
-        return true;
+        res.parents = [];
+        res.nsPath = nsPath;
+        res.fabric = GD.Core.Fabric.getFabric.apply(GD.Core.Fabric, nsPath);
+        return res;
     };
 
     /**
@@ -207,10 +299,11 @@
     };
 
     /**
-     * Creates and returns Namespace Kann vererben. Auch wegen Fluent Interface
-     * kann NS immer weiter erweitert werden. Die erste Vererbung ist
-     * massgeblich und entscheidet den Konstruktor (instanceof). Also keine
-     * Mehrfachvererbung. Die weiteren Aufrufe fuegen neue Methoden und
+     * Creates and returns Namespace. Es erzeugt den Prototypen aus 
+     * dem Prototypen der Eltern. Danach kann der Prototype einfach benutzt werdebn.
+     * Auch wegen Fluent Interface kann NS immer weiter erweitert werden. 
+     * Die erste Vererbung ist massgeblich und entscheidet den Konstruktor (instanceof). 
+     * Also keine Mehrfachvererbung. Die weiteren Aufrufe fuegen neue Methoden und
      * Eigenschaften hinzu.
      * 
      * @memberOf GD.Core.Fabric
@@ -220,7 +313,7 @@
      * @returns {GD.Core.Fabric.NS}
      */
     GD.Core.Fabric.prototype.NS = function(nsConfig, parent) {
-        var config = GD.Config;
+        var config = GD.Config, fMixin = false;
         this.ns = this.getNS(this.nsPath, true);
         if (parent) {
             if (!GD.isEmpty(this.ns.prototype)) {
@@ -230,7 +323,10 @@
                 // Object.create(parent.prototype);
             } else {
                 this.ns.prototype = Object.create(parent.prototype);
+                this.ns.parent = this.ns.prototype;
+                fMixin = true;
             }
+            this.ns.parents.push(parent);
         }
         this.ns.config = GD.extend(GD.configure(this.nsPath), nsConfig, true);
         for ( var i = 0, j = this.nsPath.length; i < j; i++) {
@@ -240,6 +336,9 @@
             config = config[this.nsPath[i]];
         }
         config = this.ns.config;
+        if(fMixin){
+            _mixinNS(this.ns);
+        }
         return this.ns;
     };
 
@@ -250,29 +349,34 @@
      * @returns {Object} GD-Object
      */
     GD.Core.Fabric.prototype.create = function() {
-        var proto = ('prototype' in this.ns) ? this.ns.prototype : {}, props = this.buildProperties(), ctx = Object
-                .create((proto === undefined) ? {} : proto, props), _ = null;
-        if ('constructor' in this.ns) {
-            /*
-             * Im Constructor koennen wieder Objekte erzeugt werden deshalb wird
-             * die statische private Variable, erst spaeter gesetzt.
-             */
-            _ = this.ns.constructor.apply(ctx, arguments);
-            openPrivacy(_, this.ns, ctx, proto);
+        var obj = _create(this.ns, this.buildProperties(), this.initProperties, this.objConfig, arguments);
+        _mixin(obj);
+        return obj;
+    };
+
+    /**
+     * creating an object and exporting for
+     * save use
+     *
+     * @memberOf GD.Core.Fabric
+     *
+     * @returns {Object} GD-Object
+     */
+    GD.Core.Fabric.prototype.exporting = function() {
+        var params = GD.Core.Convert.array(arguments), obj = {}, res = {};
+        this.objConfig = params.pop();
+        obj = this.create.apply(this, params);
+        for(var i in obj){
+            if(i.charAt(0) !== "_"){
+                if(typeof obj[i] === "function"){
+                    res[i] = obj[i].bind(obj);
+                }else{
+                    res[i] = obj[i];
+                }
+            }
         }
-
-        this.initProperties(ctx);
-        /*
-         * Ueberschreibt NS-Config mit object-settings NS-Config ist schon durch
-         * den Configure gelaufen
-         */
-        ctx.config = GD.extend(this.objConfig, this.ns.config, true);
-
-        if ('register' in this.ns && this.ns.register) {
-            GD.register(ctx);
-        }
-
-        return ctx;
+        _mixin(res);
+        return res;
     };
 
     /**
@@ -299,13 +403,19 @@
     };
 
     /**
-     * open Scope of privates to public methods
+     * Mixt/Injektiert einen NS in den aktuellen.
+     * Es werden nur statische und prototype-Methoden
+     * benutzt.
+     *
      * @memberOf GD.Core.Fabric
      * 
      * @returns GD.Core.Fabric
      */
-    GD.Core.Fabric.prototype.openMethods = function() {
-        this.ns.openMethods = Array.prototype.slice.call(arguments, 0);
+    GD.Core.Fabric.prototype.mixinNS = function(ns) {
+        /* static mixin */
+        this.ns = GD.Core.Fabric.mixin(this.ns, ns);
+        /* prototype mixin */
+        GD.Core.Fabric.mixin(this.ns.prototype, ns.prototype);
         return this;
     };
 
@@ -318,23 +428,5 @@
     GD.Core.Fabric.prototype.buildProperties = function() {
         var properties = ('properties' in this.ns) ? this.ns.properties : {};
         return properties;
-    };
-
-    /**
-     * Creates and returns Class
-     * @memberOf GD.Core.Fabric
-     * @deprecated
-     * TODO entfernen
-     * 
-     * @param {Object} parent
-     * @returns {GD.Core.Fabric.NS}
-     */
-    GD.Core.Fabric.prototype.Class = function(parent) {
-        var res = function() {
-        };
-        if (parent) {
-            res.prototype = Object.create(parent.prototype);
-        }
-        return res;
     };
 })(GD);

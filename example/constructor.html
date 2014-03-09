@@ -6,51 +6,118 @@
 <script type="text/javascript">
     var CONFIG = {
         general : {
-            verbose : true
+            verbose : false
         },
         Core : {
             Dbg : {
                 showDevSAJAXErrors : false
             }
+        },
+        Lib : {
+            Children : {
+                verbose : false
+            }
         }
     };
 </script>
-<script type="text/javascript" src="../main.js" data-config="CONFIG" data-task="example.constructors">
+<script type="text/javascript" src="../main.js" data-config="CONFIG"
+	data-task="example.constructors">
 </script>
 <!-- script type="text/javascript" src="/kb/sleep.php?milliSeconds=200" ></script -->
 <script type="text/javascript">
-var LIB = "GD";
-console.log(GD.Core.Convert.bool(1));
-//GD.Core.Util.ucFirst("tztzt");
-/*
-(function(global){
+console.log(GD.Core.Util.ucFirst("alle Dateien/Module sind erfolgreich geladen"));
+
+(function(global, lib){
     "use strict";
     
-    var ns = global[LIB].NS('Core', 'Di', {});
-    
-    ns.constructor = function(){
-        var res = {
-			__ : {
-			},
-			
-			_ : {
-			}
-        };
-        
-        return res;
-    };
-    
-    ns.prototype = {
-            pubA : function(){
-                
-            }
-    }
-}(this))
+//    var ns = lib.NS('Core', 'Di', {}).ns;
+	var d = new GD.Lib.Children({verbose:true}), 
+	dd = new GD.Lib.Children();
 
+	d.asss();
+	dd.asss();
+	dd.info("Diese Info ist aus dd");
+	d.info("Diese Info ist aus d");
+	d.asss();
+	console.log("test: Ist private Eigenschaft _a vorhanden?"+('_a' in d));
+	GD.Lib.Parent.prototype.asss = function(){
+	    console.log("Jetzt wird der Prototype der Eltern ueberschrieben.");
+	}
+	d.asss();
+
+}(this, this[__LIB__]))
+
+/*
+var builder = {
+        inherit : function(clss){
+            var res = function(){
+                
+            },
+            creator = function(proto){
+             	var __ = clss.create();
+             	
+             	return (function(proto){
+             	    return {
+             	    	_a : proto._a,
+             	    	b : proto.b
+             	    };
+             	}(proto))
+            };
+            res.prototype = creator(clss.prototype);
+//            res.prototype.__ = clss.create();
+            return new res();
+        },
+        
+        create : function(clss){
+            var obj = this.inherit(clss), res = {};
+             for(var i=0, j=clss.pub.length;i<j; i++){
+                res[clss.pub[i]] = obj[clss.pub[i]].bind(obj);
+            }
+             return obj;
+ 
+        }
+},
+test = function(){},
+d, dd;
+
+test.create = function(){
+    return {
+    	aa : 0,
+       	reset : function(){
+       	    this.aa = 0;
+       	}
+    }
+};
+
+
+test.prototype._a = function(){
+	return __.aa++;
+};
+
+test.prototype.b = function(){
+  	console.log(this._a());  
+};
+
+
+d = builder.create(test),
+dd = builder.create(test);
+console.log("-------------");
+d.b();
+dd.b();
+d.b();
+test.prototype.a = function(){
+    return this.__.aa--;
+};
+dd.b();
+d.b();
+dd.b();
+
+d.a();
 
 (function(di){
     
-}(this[LIB].Di))
+}(this[__LIB__].Di))
+/*
 */
 </script>
 </head>

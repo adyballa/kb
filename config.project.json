@@ -1,7 +1,7 @@
 {
 "modules" : {
     "example.constructors": {
-    	"files": [  ],
+    	"files": [ "lib/test.js" ],
         "tasks": [ "core" ],
         "grunts": {
             "jshint": true,
@@ -14,6 +14,7 @@
     }
 },
 "settings" : {
+	"libname" : "GD",
     "server" : "http://localhost:50009",
     "host" : "localhost",
     "runningMode" : "development",

@@ -58,9 +58,8 @@ if (!Object.create) {
     Object.create = function(o) {
         'use strict';
         function F() {
-            // ??
         }
-        F.prototype = 0;
+        F.prototype = o;
         var res = new F(), i = 0;
         if (arguments.length > 1) {
             /* Erweiterung v. adyballa */

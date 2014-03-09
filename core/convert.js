@@ -1,4 +1,4 @@
-/* global GD, GDDEV */
+/* global GD */
 /**
  * @file Erweitert GD-Core um Konvertierungen
  */
