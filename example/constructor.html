@@ -30,21 +30,56 @@ console.log(GD.Core.Util.ucFirst("alle Dateien/Module sind erfolgreich geladen")
 (function(global, lib){
     "use strict";
     
-//    var ns = lib.NS('Core', 'Di', {}).ns;
-	var d = new GD.Lib.Children({verbose:true, myTest:true}), 
-	dd = new GD.Lib.Children();
+	var d = {}, 
+	dd = {};
+	
+	console.info(" --- Test globales Event-system und Mixin: Wir haengen uns in das Event gd:lib:test:parent:load ein --- ");
+	GD.Core.Event.add(d, "gd:lib:test:parent:load", function(e){
+	    e.target.log("gd:lib:test:parent:load wird durchlaufen. Gleich dir-Ausgabe fuer das gesamte Event");
+	    console.dir(e);
+	});
+	
+	d = new GD.Lib.Test.Children({verbose:true, myTest:true});
+	dd = new GD.Lib.Test.Children();
+	
+	GD.Lib.Test.Children.staticTest();
 
-	d.asss();
-	dd.asss();
-	dd.info("Diese Info ist aus dd");
-	d.info("Diese Info ist aus d");
-	d.asss();
-	console.log("test: Ist private Eigenschaft _a vorhanden?"+('_a' in d));
-	GD.Lib.Parent.prototype.asss = function(){
-	    console.log("Jetzt wird der Prototype der Eltern ueberschrieben.");
+	d.info("Check: Prueft Mixin aus DBG und verbose");
+	console.info(" --- Test Children ueberschreibt Parent-methode: Children erhoeht Eigenschaft um 2, 3 parent primitive Property, Parent um 1. Erwartet wird ergebnis 3, parent 4 --- ");
+	d.overwriteTest();
+	console.info(" --- Test Konfiguration setzen: Verbose ist Klasse false und als Objekt fuer d true und dd. Erwartet ... --- ");
+	dd.overwriteTest();
+	console.info(" ... wird hier keine Ausgabe, aber hier:");
+	d.log("Diese Info ist aus d und soll gedruckt werden");
+	dd.log("Diese Info ist aus dd und darf nicht gedruckt werden.");
+	
+	console.info(" --- Test Vererbung: Children uebernimmt Methoden aus Parent. Methode wird aus parent reinkopiert. Erwartet wird Ausgabe 4. Damit haben alle 4. --- ");
+	d.methodFromParent();
+	
+	console.info(" --- Test Private Eigenschaften: Ist private Eigenschaft _privateProperty vorhanden?"+('_privateProperty' in d)+" --- ");
+
+	console.info(" --- Test parent Zugriff: Laesst overwriteTest-Methode von Eltern-objekt ausfuehren mit gemeinsam genutztem Zahler. Erwartet wird Ergebnis (_privateProperty:4 parent:5 shared:5) --- ")
+	d.parentOverwriteTest();
+
+	console.info(" --- Test Prototype ueberschreiben und Objekt-erzuegung: overwriteTest kann bei export-erzeugung (new GD.Lib.Test.Children()) nicht ueberschrieben werden, da kein Prototype existiert. Erwartet wird (_privateProperty:2 parent:8 shared:7). --- ");
+	GD.Lib.Test.Children.prototype.overwriteTest = function(){
+	    console.log("Ueberschreibung 1");
 	}
-	d.asss();
 
+	d.overwriteTest();
+	
+	dd = GD.Fabric("Lib", "Test", "Children", {verbose:true}).create();
+
+	console.info(" --- Test Prototype ueberschreiben und Objekt-erzuegung: overwriteTest kann jetzt ueberschrieben werden, da mit create erzeugt (GD.Fabric(...).create()) wird. Erwartet wird Ausgabe - Ueberschreiben 1. --- ");
+	dd.overwriteTest();
+	GD.Lib.Test.Children.prototype.overwriteTest = function(){
+	    console.log("Ueberschreibung 2");
+	}
+
+	console.info(" --- Test Prototype ueberschreiben und Objekt-erzuegung: overwriteTest wird nochmals mit Prototypen ueberschrieben. Erwartet wird Ausgabe - Ueberschreiben 2. --- ");
+	dd.overwriteTest();
+
+	console.info(" --- Test Private Eigenschaften: Bei create.Erzeugung sind alle private Eigenschaften zugaenglich. _privateProperty vorhanden?"+('_privateProperty' in dd)+" --- ");
 }(this, this[__LIB__]))
 
 /*

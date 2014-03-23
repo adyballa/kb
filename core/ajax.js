@@ -38,39 +38,115 @@
      * 
      * @property {object} config
      */
-    var config = {};
+    var config = {},
     
+    /**
+     * erzeugt XMLHttpRequest-objekt
+     *
+     * @returns {XMLHttpRequest}
+     */
+    createClient = function() {
+        var XMLHttpFactories = [ function() {
+            return new XMLHttpRequest();
+        }, function() {
+            return new ActiveXObject("Msxml2.XMLHTTP");
+        }, function() {
+            return new ActiveXObject("Msxml3.XMLHTTP");
+        }, function() {
+            return new ActiveXObject("Microsoft.XMLHTTP");
+        } ],
+
+        _createXMLHTTPObject = function() {
+            var xmlhttp = false;
+            for ( var i = 0; i < XMLHttpFactories.length; i++) {
+                try {
+                    xmlhttp = XMLHttpFactories[i]();
+                } catch (e) {
+                    continue;
+                }
+                break;
+            }
+            return xmlhttp;
+        };
+
+        return _createXMLHTTPObject();
+    };
+
     GD.NS('Core', 'Ajax', config);
 
     /**
-     * loads script
-     * @memberOf GD.Lib.Ajax
+     * loads script with promise 
+     * @memberOf GD.Core.Ajax
      * 
      * @param {string} fileName
-     * @param {GD.Core.Ajax.Script} callback
+     * @param {boolean} async
      */
-    GD.Core.Ajax.loadScript = function(fileName, callback){
-        var script = document.createElement("script");
-        script.type = "text/javascript";
-        script.src = fileName;
-        script.onreadystatechange= function () {
-            if (this.readyState === 'complete'){
-                callback();
-            }
-        };
-        script.onload = callback;
-        GD.doc.getElementsByTagName("head")[0].appendChild(script);
+    GD.Core.Ajax.loadScript = function(fileName, async){
+        return new Promise(function(resolve, reject){
+            var script = document.createElement("script"), module = {};
+            script.type = "text/javascript";
+            script.src = fileName;
+            script.async = (typeof async === "undefined") ? true : (async);
+            script.onreadystatechange = function () {
+                if (this.readyState === 'complete'){
+                    resolve();
+                }
+            };
+            script.onload = function(e){
+                resolve(e);
+            };
+            GD.doc.getElementsByTagName("head")[0].appendChild(script);
+        });
+    };
+
+    /**
+     * Polyfill:
+     * Require Nodejs-module
+     * @memberOf window
+     *
+     * @params {String} fileName 
+     * @returns {Object}
+     */
+    GD.global.require = function(fileName){
+        var client = createClient(), headElement, newScriptElement;
+        GD.global.module = {};
+        client.open('GET', fileName, false);
+        client.send(null);
+
+        if(/^\W*[{]/gi.test(client.responseText)){
+            return JSON.parse(client.responseText);
+        }
+        
+        headElement = document.getElementsByTagName("head")[0];
+        newScriptElement = document.createElement("script");
+        newScriptElement.type = "text/javascript";
+        newScriptElement.text = client.responseText;
+        headElement.appendChild(newScriptElement);
+        return GD.global.module.exports(); 
     };
 
     /**
      * loads and parses JSON-file
-     * @memberOf GD.Lib.Ajax
+     * @memberOf GD.Core.Ajax
      * TODO: to implement
      * 
      * @param {string} url
      * @param {GD.Core.Ajax.Successhandler} sucessHandler
      */
-    GD.Core.Ajax.getJSON = function(url, sucessHandler) {
-        sucessHandler(null);
+    GD.Core.Ajax.getJSON = function(url) {
+        return new Promise(function(resolve, reject){
+            var client = createClient();
+            client.open('GET', url, true);
+            client.send();
+            GD.Core.Event.add(client, 'load', function(e){
+                resolve(JSON.parse(client.responseText), e);
+            });
+            GD.Core.Event.add(client, 'error', function(e){
+                reject("Error occured", e);
+            });
+            GD.Core.Event.add(client, 'abort', function(e){
+                reject("Abort", e);
+            });
+        });
     };
 })(GD);

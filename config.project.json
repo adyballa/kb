@@ -1,7 +1,27 @@
 {
 "modules" : {
     "example.constructors": {
-    	"files": [ "lib/test.js" ],
+    	"files": [ "example/test.parent.js", "lib/point.js", "example/test.children.js"],
+    	"injection" : {
+    		"example/test.parent.js" : {
+	    		"ns" : {
+	    			"path" : ["Lib", "Test", "Parent"],
+	    			"config" : {"myTest": false}
+	    		}
+    		},
+    		"example/test.children.js" : {
+    			"test_DI" : {
+    				"create" : "create",
+    				"ns" : ["Lib", "Point"],
+    				"parameters" : [10, 10] 
+    			},
+	    		"ns" : {
+	    			"path" : ["Lib", "Test", "Children"],
+	    			"parent" : ["Lib", "Test", "Parent"],
+	    			"config" : {"verbose": true}
+	    		}
+    		}
+    	},
         "tasks": [ "core" ],
         "grunts": {
             "jshint": true,

@@ -22,9 +22,9 @@
      * @memberOf GD.Core.Dbg
      * 
      * @property {object} config
-     * @property {boolean} config.verbose derfault=true 
-     * @property {boolean} config.fStackOutput derfault=true 
-     * @property {boolean} config.fFullTrace derfault=false 
+     * @property {boolean} config.verbose default=true 
+     * @property {boolean} config.fStackOutput default=true 
+     * @property {boolean} config.fFullTrace default=false 
      */
     var config = {
         verbose : true,
@@ -139,7 +139,7 @@
      * @param {boolean} fForce Wird die Ausgabe erzwungen?
      */
     GD.Core.Dbg.mixin = function(obj) {
-        obj.dbg = _createFct(obj.config.verbose, GD.Core.Console.dbg);
+        obj.log = _createFct(obj.config.verbose, GD.Core.Console.log);
         obj.info = _createFct(obj.config.verbose, GD.Core.Console.info);
         obj.warn = _createFct(obj.config.verbose, GD.Core.Console.warn);
         obj.dir = _createFct(obj.config.verbose, GD.Core.Console.dir);
@@ -169,10 +169,10 @@
     /**
      * Gibt den Stack zurueck
      *
-     * @param offset
+     * @param {RegExp} regExp
      * @returns
      */
-    GD.Core.Dbg.getStack = function(offset)
+    GD.Core.Dbg.getStack = function(regExp)
     {
         var _createFct = function(){
             var constructor = function() {
@@ -182,8 +182,9 @@
 //                  /^(.*?)@(.*?):(.*?)$/.exec( stack[1] );
 //              this.stack = stack.join("\n");|
                 var err = new Error();
+                
                 GD.Core.Dbg.Stack = err.stack.trim().split("\n").map(function(line){
-                    var res = line.match(new RegExp("^([^@]*?)(\/<)?@(.+)"+GD.Config.Core.root+"(.+):(.+)$"));
+                    var res = line.match(regExp);
                     if(res){
                         res = {'line' : res[5], 'file' : res[4], 'fct' : res[1]};
                         res.toString = function(){
@@ -220,12 +221,19 @@
                 debug: GD.Core.Console.debug,
                 warn: GD.Core.Console.warn,
                 log: GD.Core.Console.log
-        };
+        }, regExp = (function(){
+            if(/webkit/i.test(GD.global.navigator.userAgent)){
+                return new RegExp(" at ([^@]*?)(\/<)?[(](.+)"+GD.Config.Core.root+"([^:]+):(.+)[)]$");
+            }
+            if(/firefox/i.test(GD.global.navigator.userAgent)){
+                return new RegExp("^([^@]*?)(\/<)?@(.+)"+GD.Config.Core.root+"([^:]+):(.+)$");
+            }
+        }());
     
         for(var i in base){
             GD.Core.Console[i] = (function(i){
                 return function(mssg){
-                    var res = GD.Core.Dbg.getStack(), index = 0;
+                    var res = GD.Core.Dbg.getStack(regExp), index = 0;
                     if(res[0]){
                         var head = res[0].fct;
                         if(GD.Core.Dbg.config.fFullTrace){
@@ -234,7 +242,7 @@
                             }
                             head = res[index].fct;
                         }
-                        base[i]("%c"+head+"%c:\n"+mssg+"\n%c"+((GD.Core.Dbg.config.fFullTrace) ? res.join("\n") : res[0]),"font-weight:bold", "font-weight:normal", "font-size:10px;font-style:italic");
+                        base[i].call(GD.Core.Console, "%c"+head+"%c:\n"+mssg+"\n%c"+((GD.Core.Dbg.config.fFullTrace) ? res.join("\n") : res[0]),"font-weight:bold", "font-weight:normal", "font-size:10px;font-style:italic");
                     }
                 };
             })(i);

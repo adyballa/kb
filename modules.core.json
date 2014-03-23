@@ -308,7 +308,7 @@
         }
     },
     "test": {
-        "files": [ "lib/test.js", "lib/test.js" ],
+        "files": [ "lib/test.js" ],
         "tasks": [ "core" ],
         "grunts": {
             "jshint": true,
@@ -448,7 +448,7 @@
         }
     },
     "core": {
-        "files": [ "core/core.js", "core/fabric.js", "core/event.js", "core/console.js", "core/error.js", "core/util.js", "core/ajax.js", "core/convert.js" ],
+        "files": [ "polyfill/promise-0.1.1.js", "polyfill/core.js", "core/core.js", "core/fabric.js", "core/event.js", "core/console.js", "core/error.js", "core/ajax.js", "core/dependency_injection.js", "core/util.js", "core/convert.js" ],
         "grunts": {
             "jshint": true,
             "jsdoc": true,

@@ -2,6 +2,7 @@ module.exports = function() {
     var GDTASK = {};
     GDTASK.tasksLex = {};
     GDTASK.filesLex = {};
+    GDTASK.modules = [];
 
     GDTASK.Grunt = {
         tasks : [ 'jshint', 'jsdoc','relative2Absolute','concat', 'removeDbgs', 'uglify', 'cssmin', 'clearDir' ],
@@ -128,6 +129,9 @@ module.exports = function() {
             }
             
             orig = (task && Array.isArray(GDTASK.definition[lib].grunts[task])) ? GDTASK.definition[lib].grunts[task] : GDTASK.definition[lib].files;
+            
+            GDTASK.modules.push(lib);
+
             ln =  orig.length;
             for ( var i = 0; i < ln; i++) {
                 if (typeof GDTASK.filesLex[orig[i]] === "undefined") {
@@ -137,6 +141,7 @@ module.exports = function() {
                 }
             }
         }
+        
         GDTASK.Grunt.grunt.verbose.writeln("getFiles TASK ist "+task);
         getFiles(lib, task);
 

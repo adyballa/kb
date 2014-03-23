@@ -16,9 +16,10 @@
      * @param {Object} props
      * @param {Function} initProperties
      * @param {Object} objConfig
+     * @param {Object} obj
      * @returns {Object} GD-Object
      */
-    var _create = function(ns, props, initProperties, objConfig, constructParams){
+    var _create = function(ns, props, initProperties, objConfig, obj, constructParams){
         var proto = ('prototype' in ns) ? ns.prototype : {},
                 ctx = Object.create((proto === undefined) ? {} : proto, props);
         /*
@@ -27,6 +28,9 @@
          */
         ctx.config = GD.extend(ns.config);
         GD.extend(objConfig, ctx.config, true);
+        if(obj){
+            _mixin.call(obj, ctx);
+        }
 
         if ('constructor' in ns) {
             /*
@@ -66,8 +70,9 @@
                         ('properties' in ns.parents[i]) ? ns.parents[i].properties : {}, 
                         ns.parents[i].fabric.initProperties, 
                         config, 
+                        ns.parents[i].fabric,
                         constructParams);
-            obj = GD.extend(parent, obj, true, true);
+            obj = GD.extend(parent, obj, false, true);
             obj.parent = parent;
         }
 //        if('parent' in ns){
@@ -86,9 +91,10 @@
      */
     _mixin = function(obj){
         if(GD.isRunning('development')){
-            GD.Core.Dbg.mixin(obj);
+            GD.Core.Dbg.mixin(obj, this);
         }
-    },
+        GD.Core.Event.mixin(obj, this);
+   },
     
     /**
      * Standard-mixins fuer alle NS
@@ -232,6 +238,7 @@
             }
         }
         Fabric = new Fabric();
+        Fabric.nsPath = dArguments;
         return Object.create(Fabric, GD.Core.Fabric);
     };
 
@@ -245,7 +252,7 @@
      */
     GD.Core.Fabric.prototype.setNS = function(nsPath, fForce) {
         this.nsPath = nsPath;
-        if (typeof this.nsPath[this.nsPath - 1] === "object") {
+        if (typeof this.nsPath[this.nsPath.length - 1] === "object") {
             this.objConfig = this.nsPath.pop();
         }
         this.ns = this.getNS(this.nsPath, fForce);
@@ -266,7 +273,7 @@
         };
         res.parents = [];
         res.nsPath = nsPath;
-        res.fabric = GD.Core.Fabric.getFabric.apply(GD.Core.Fabric, nsPath);
+        res.fabric = GD.Core.Fabric.getFabric.apply(GD.Core.Fabric, [nsPath]);
         return res;
     };
 
@@ -349,8 +356,7 @@
      * @returns {Object} GD-Object
      */
     GD.Core.Fabric.prototype.create = function() {
-        var obj = _create(this.ns, this.buildProperties(), this.initProperties, this.objConfig, arguments);
-        _mixin(obj);
+        var obj = _create(this.ns, this.buildProperties(), this.initProperties, this.objConfig, this, arguments);
         return obj;
     };
 
@@ -375,8 +381,18 @@
                 }
             }
         }
-        _mixin(res);
+//        _mixin.call(this, res);
         return res;
+    };
+
+    /**
+     * Gibt qualufizierten Name/URI des NS zurueck
+     * @memberOf GD.Core.Fabric
+     * 
+     * @returns {String}
+     */
+    GD.Core.Fabric.prototype.nsURI = function() {
+        return GD.global.__LIB__.toLowerCase()+":"+this.nsPath.join(":").toLowerCase();
     };
 
     /**
