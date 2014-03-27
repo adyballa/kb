@@ -80,6 +80,9 @@ console.log(GD.Core.Util.ucFirst("alle Dateien/Module sind erfolgreich geladen")
 	dd.overwriteTest();
 
 	console.info(" --- Test Private Eigenschaften: Bei create.Erzeugung sind alle private Eigenschaften zugaenglich. _privateProperty vorhanden?"+('_privateProperty' in dd)+" --- ");
+	
+	console.info(" --- Test Di: Erwartet wird eine Dirausgabe von einem Punkt der aus einem DI-Container gezogen wurde --- ");
+	d.diTest(3);
 }(this, this[__LIB__]))
 
 /*

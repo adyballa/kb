@@ -248,4 +248,5 @@
             })(i);
         }
     }
+    GD.Core.Fabric.mixins.obj.add('development', GD.Core.Dbg.mixin);
 })(GD);

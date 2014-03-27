@@ -567,4 +567,6 @@
     GD.Core.Event.add(window, 'unload', function() {
         GD.runLifeCycle('destroy');
     });
+    
+    GD.Core.Fabric.mixins.obj.add("development", GD.Core.Event.mixin);
 })(GD);

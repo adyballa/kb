@@ -90,10 +90,15 @@
      * @param {Object} obj
      */
     _mixin = function(obj){
+        var i = 0, j = 0;
         if(GD.isRunning('development')){
-            GD.Core.Dbg.mixin(obj, this);
+            for(i = 0, j = GD.Core.Fabric.mixins.obj.development.length; i < j; i++){
+                GD.Core.Fabric.mixins.obj.development[i](obj, this);;
+            }
         }
-        GD.Core.Event.mixin(obj, this);
+        for(i = 0, j = GD.Core.Fabric.mixins.obj.all.length; i < j; i++){
+            GD.Core.Fabric.mixins.obj.all[i](obj, this);;
+        }
    },
     
     /**
@@ -106,6 +111,42 @@
      */
     _mixinNS = function(ns){
         
+    },
+    
+    /**
+     * mixinObj-Function
+     * @memberOf mixinObj
+     * @function
+     * @private
+     *
+     * @returns {mixinObj}
+     */
+    mixinObj = function(){
+        this.development = [];
+        this.all = [];
+
+        /**
+         * adds Mixin-object
+         */
+        this.add = function(type, mixin){
+            this[type].push(mixin);
+        };
+
+        /**
+         * remove mixin-object
+         */
+        this.remove = function(type, i, mixin){
+            var j = this[type].length;
+            if(typeof mixin === "function"){
+                i = 0;
+                while(i<j && this[type][i] !== mixin){
+                    i++;
+                }
+            }
+            if(i < j){
+                this[type].slice(i,1);
+            }
+        };
     };
 
     /**
@@ -166,6 +207,18 @@
         this.nsPath = [];
     };
 
+    /**
+     * @memberOf GD.Core.Fabric
+     *
+     * @property {Object} mixins
+     * @property {mixinObj} mixins.ns
+     * @property {mixinObj} mixins.obj
+     */
+    GD.Core.Fabric.mixins = {
+        "ns" : new mixinObj(),
+        "obj" : new mixinObj()
+    };
+    
     /**
      * initialize Configuration
      * @memberOf GD.Plugins.Fabric

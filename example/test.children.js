@@ -29,4 +29,15 @@ function(lib, clss) {
     clss.prototype.parentOverwriteTest = function(){
         this.parent.overwriteTest();
     };
+    
+    /**
+     * @memberOf GD.Lib.Test.Children#
+     * 
+     * @param {number} factor
+     */
+    clss.prototype.diTest = function(factor){
+        /** @returns  {GD.Lib.Point} point **/
+        var point = clss.Di.get("test_DI");
+        this.dir(point.mul(factor));
+    };
 }(GD, GD.Ns));

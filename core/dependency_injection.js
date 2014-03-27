@@ -77,18 +77,21 @@
      * @param {string} file
      */
     GD.Core.Di.get = function(file){
+        var di;
         verbose("GD.Core.Di.get file:"+file);
         if(file in map.files){
             verbose("GD.Core.Di.get file:"+file);
-            GD.Di = GD.Fabric("Core", "Di").create(map.files[file]);
-            GD.Ns = GD.Di.ns();
+            di = GD.Fabric("Core", "Di").create(map.files[file]);
+            GD.Ns = di.ns();
+            GD.Ns.Di = di;
         }else{
             verbose(map);
             verbose("Fuer die Datei "+file+" existiert keine Injection", map);
-            GD.Di = {};
-            GD.Ns = {};
+            GD.Ns = {
+                    Di : {}
+            };
         }
-        GD.Di.file = file;
+        GD.Ns.Di.file = file;
     };
 
     /**
