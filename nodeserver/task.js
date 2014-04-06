@@ -97,6 +97,9 @@ module.exports = function() {
     for(var i in def['modules']){
         GDTASK.definition[i] = def['modules'][i];
     }
+    GDTASK.development = def['development'];
+    GDTASK.all_modi = def['all_modi'];
+    GDTASK.production = def['production'];
     GDTASK.settings = def['settings'];
     
     GDTASK.resetFiles = function(){

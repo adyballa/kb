@@ -1,8 +1,14 @@
 {
 "modules" : {
     "example.constructors": {
-    	"files": [ "example/test.parent.js", "lib/point.js", "example/test.children.js"],
+    	"files": [ "lib/point.js", "example/test.parent.js", "example/test.children.js"],
+    	"production_file" : "example/example.constructors.min.mdl.js",
     	"injection" : {
+     		"lib/point.js" : {
+	    		"ns" : {
+	    			"path" : ["Lib", "Point"]
+	    		}
+    		},
     		"example/test.parent.js" : {
 	    		"ns" : {
 	    			"path" : ["Lib", "Test", "Parent"],
@@ -22,7 +28,7 @@
 	    		}
     		}
     	},
-        "tasks": [ "core" ],
+        "tasks": [ "core", "test" ],
         "grunts": {
             "jshint": true,
             "concat": true,
@@ -33,9 +39,48 @@
         }
     }
 },
+"all_modi":{
+	"log":{
+		"writer":{
+			"Console":{
+				"priority":3
+			}  
+		}
+	},
+	"error":{
+		"writer":{
+			"Console":{
+				"priority":5
+			}  
+		},
+		"format":{
+			"ns":["Core","Log","Format","Locale"],
+			"config":{
+				"lang":"de"
+			}
+		}
+	}
+},
+"development":{
+	"log":{
+		"writer":{
+			"Console":{
+				"priority":7
+			}  
+		}
+	},
+	"error":{
+		"writer":{
+			"Console":{
+				"priority":7
+			}  
+		}
+	}
+},
 "settings" : {
 	"libname" : "GD",
     "server" : "http://localhost:50009",
+    "production_file" : "example/example.constructors.min.global.js",
     "host" : "localhost",
     "runningMode" : "development",
     "root" : "/kb",

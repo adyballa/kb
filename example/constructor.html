@@ -6,52 +6,82 @@
 <script type="text/javascript">
     var CONFIG = {
         general : {
-            verbose : false
+            verbose : true
         },
-        Core : {
-            Dbg : {
-                showDevSAJAXErrors : false
+        Core:{
+            Log:{
+                Writer:{
+                    Console:{
+                        //id:"DEBUG"
+                    }
+                }
             }
         },
         Lib : {
-            Children : {
-                verbose : false
+            Test : {
+                Children : {
+                    priority : 7
+                }
             }
         }
     };
 </script>
+<!-- 
+data-production-file="example/example.constructors.min.file.js"
+ -->
 <script type="text/javascript" src="../main.js" data-config="CONFIG"
-	data-task="example.constructors">
+	data-task="example.constructors" 
+	data-production-file="example/example.constructors.min.file.js"
+	data-async="false">
 </script>
 <!-- script type="text/javascript" src="/kb/sleep.php?milliSeconds=200" ></script -->
 <script type="text/javascript">
-console.log(GD.Core.Util.ucFirst("alle Dateien/Module sind erfolgreich geladen"));
+try {
+    console.info(GD.Core.Util.ucFirst("alle Dateien/Module sind erfolgreich geladen"));
+} catch (e) {
+    console.info("Dateien/Module sind noch nicht geladen");
+}
 
-(function(global, lib){
+console.dir(GD);
+/* HTML Console kann nur nach geladener DOM ausgegeben werden */
+//GD.Core.Event.ready(function(){
+/* ISReady ist fuer asynchrones laden */
+GD.isReady(function(){
     "use strict";
     
+    console.info("GD.isReady. Alle Module geladen.");
+
 	var d = {}, 
 	dd = {};
 	
-	console.info(" --- Test globales Event-system und Mixin: Wir haengen uns in das Event gd:lib:test:parent:load ein --- ");
-	GD.Core.Event.add(d, "gd:lib:test:parent:load", function(e){
-	    e.target.log("gd:lib:test:parent:load wird durchlaufen. Gleich dir-Ausgabe fuer das gesamte Event");
+	console.info(" --- Test globales Event-system und Mixin: Wir haengen uns in das Event gd:lib:test:parent:load und gd:load ein --- ");
+	GD.Core.Event.add("gd:lib:test:parent:load", function(e){
+	    e.target.log.info("gd:lib:test:parent:load wird durchlaufen. Gleich dir-Ausgabe fuer das gesamte Event");
 	    console.dir(e);
-	});
+	}, d);
 	
-	d = new GD.Lib.Test.Children({verbose:true, myTest:true});
+	d = new GD.Lib.Test.Children({priority:GD.Core.Log.DEBUG, myTest:true});
 	dd = new GD.Lib.Test.Children();
 	
 	GD.Lib.Test.Children.staticTest();
 
-	d.info("Check: Prueft Mixin aus DBG und verbose");
+	d.log.notice("Check: Prueft Mixin aus DBG und verbose");
+	d.log.err("Das ist ein Err von Objekt d");
+	dd.log.crit("Das ist ein Crit von Objekt dd");
+	d.log.debug("Das ist ein Debug von Objekt d");
+	dd.log.debug("Das ist ein Debug von Objekt dd");
+	
 	console.info(" --- Test Children ueberschreibt Parent-methode: Children erhoeht Eigenschaft um 2, 3 parent primitive Property, Parent um 1. Erwartet wird ergebnis 3, parent 4 --- ");
 	d.overwriteTest();
 	console.info(" --- Test Konfiguration setzen: Verbose ist Klasse false und als Objekt fuer d true und dd. Erwartet ... --- ");
 	dd.overwriteTest();
 	console.info(" ... wird hier keine Ausgabe, aber hier:");
-	d.log("Diese Info ist aus d und soll gedruckt werden");
-	dd.log("Diese Info ist aus dd und darf nicht gedruckt werden.");
+	d.log.debug("Dieser Error ist aus d und soll als Debug gedruckt werden");
+	dd.log.debug("Dieser Error ist aus dd und soll als Debug gedruckt werden");
+
+	d.error.warn("this is a testmessage");
+	d.error.debug("Diese Info ist aus d und soll gedruckt werden");
+	dd.error.debug("Diese Info ist aus dd und darf nicht gedruckt werden.");
 	
 	console.info(" --- Test Vererbung: Children uebernimmt Methoden aus Parent. Methode wird aus parent reinkopiert. Erwartet wird Ausgabe 4. Damit haben alle 4. --- ");
 	d.methodFromParent();
@@ -83,83 +113,12 @@ console.log(GD.Core.Util.ucFirst("alle Dateien/Module sind erfolgreich geladen")
 	
 	console.info(" --- Test Di: Erwartet wird eine Dirausgabe von einem Punkt der aus einem DI-Container gezogen wurde --- ");
 	d.diTest(3);
-}(this, this[__LIB__]))
-
-/*
-var builder = {
-        inherit : function(clss){
-            var res = function(){
-                
-            },
-            creator = function(proto){
-             	var __ = clss.create();
-             	
-             	return (function(proto){
-             	    return {
-             	    	_a : proto._a,
-             	    	b : proto.b
-             	    };
-             	}(proto))
-            };
-            res.prototype = creator(clss.prototype);
-//            res.prototype.__ = clss.create();
-            return new res();
-        },
-        
-        create : function(clss){
-            var obj = this.inherit(clss), res = {};
-             for(var i=0, j=clss.pub.length;i<j; i++){
-                res[clss.pub[i]] = obj[clss.pub[i]].bind(obj);
-            }
-             return obj;
- 
-        }
-},
-test = function(){},
-d, dd;
-
-test.create = function(){
-    return {
-    	aa : 0,
-       	reset : function(){
-       	    this.aa = 0;
-       	}
-    }
-};
-
-
-test.prototype._a = function(){
-	return __.aa++;
-};
-
-test.prototype.b = function(){
-  	console.log(this._a());  
-};
-
-
-d = builder.create(test),
-dd = builder.create(test);
-console.log("-------------");
-d.b();
-dd.b();
-d.b();
-test.prototype.a = function(){
-    return this.__.aa--;
-};
-dd.b();
-d.b();
-dd.b();
-
-d.a();
-
-(function(di){
     
-}(this[__LIB__].Di))
-/*
-*/
+});
 </script>
 </head>
 <body>
+<div id="DEBUG"></div>
 
 </body>
 </html>

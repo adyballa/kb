@@ -310,6 +310,30 @@
     "test": {
         "files": [ "lib/test.js" ],
         "tasks": [ "core" ],
+    	"injection" : {
+    		"lib/test.js" : {
+	    		"ns" : {
+	    			"path" : ["Lib", "Test"],
+	    			"config" : {
+				        "frameRateMs" : 100,
+				        "intMaxIteration" : 10,
+				        "verbose" : false,
+				        "cookie" : {
+				            "fUse" : true,
+				            "expires" : 14400000
+				        },
+				        "mobilResolution" : {
+				            "checkH" : 600
+				        },
+				        "browserFastEnough" : {
+				            "iteration" : 5,
+				            "frameRateMs" : 40,
+				            "offset" : 100
+				        }
+				    }
+	    		}
+    		}
+    	},
         "grunts": {
             "jshint": true,
             "jsdoc": true,
@@ -438,6 +462,13 @@
     "node": {
         "files": [ "lib/node.js", "lib/css.js", "lib/point.js", "lib/node/scroll.js" , "lib/node/bind.js" ],
         "tasks": [ "core" ],
+    	"injection" : {
+    		"lib/point.js" : {
+	    		"ns" : {
+	    			"path" : ["Lib", "Point"]
+	    		}
+    		}
+    	},
         "grunts": {
             "jshint": true,
             "jsdoc": true,
@@ -448,22 +479,28 @@
         }
     },
     "core": {
-        "files": [ "polyfill/promise-0.1.1.js", "polyfill/core.js", "core/core.js", "core/fabric.js", "core/event.js", "core/console.js", "core/error.js", "core/ajax.js", "core/dependency_injection.js", "core/util.js", "core/convert.js" ],
+        "files": [ 
+        	"polyfill/promise-0.1.1.js", 
+        	"polyfill/core.js", 
+        	"core/core.js", 
+        	"core/fabric.js", 
+        	"core/event.js", 
+        	"core/log.js",
+        	"core/log/format.js",
+        	"core/log/format/locale.js",
+        	"core/log/stack.js",
+        	"core/log/writer.js",
+        	"core/log/writer/console.js",
+        	"core/ajax.js", 
+        	"core/dependency_injection.js", 
+        	"core/util.js", 
+        	"core/convert.js" 
+		],
         "grunts": {
             "jshint": true,
             "jsdoc": true,
             "concat": true,
             "uglify": true,
-            "jasmine": false
-        }
-    },
-    "dev": {
-        "files": [ "core/dev/dbg.js" ],
-        "grunts": {
-            "jshint": false,
-            "jsdoc": true,
-            "concat": false,
-            "uglify": false,
             "jasmine": false
         }
     },

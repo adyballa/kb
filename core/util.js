@@ -59,7 +59,7 @@
      * @return {(HTMLDocument|Element)}
      */
     GD.Core.Util.convertStr2Dom = function(strDom) {
-        if (DOMParser in GD.win) {
+        if (DOMParser in GD.global) {
             return new DOMParser().parseFromString(strDom, "text/xml");
         }
         /* bietet keinen getElementById */

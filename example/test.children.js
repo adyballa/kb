@@ -38,6 +38,6 @@ function(lib, clss) {
     clss.prototype.diTest = function(factor){
         /** @returns  {GD.Lib.Point} point **/
         var point = clss.Di.get("test_DI");
-        this.dir(point.mul(factor));
+        this.log.notice(point.mul(factor));
     };
 }(GD, GD.Ns));

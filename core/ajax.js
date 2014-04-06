@@ -138,15 +138,17 @@
             var client = createClient();
             client.open('GET', url, true);
             client.send();
-            GD.Core.Event.add(client, 'load', function(e){
+            GD.Core.Event.add('load', function(e){
                 resolve(JSON.parse(client.responseText), e);
-            });
-            GD.Core.Event.add(client, 'error', function(e){
+            }, client);
+            GD.Core.Event.add('error', function(e){
                 reject("Error occured", e);
-            });
-            GD.Core.Event.add(client, 'abort', function(e){
+            }, client);
+            GD.Core.Event.add('abort', function(e){
                 reject("Abort", e);
-            });
+            }, client);
         });
     };
+    
+    GD.Core.Event.dispatch("gd:core:ajax:load");
 })(GD);

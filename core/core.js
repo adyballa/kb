@@ -88,6 +88,18 @@
      * @type {string}
      */
     GD.runningMode = "production";
+    
+    /**
+     * Ist alles geladen
+     * @memberOf GD
+     * @member isReady
+     * @default false
+     * @instance
+     * @private
+     * 
+     * @type {boolean}
+     */
+    GD._isReady = false;
 
     /**
      * <p>
@@ -108,6 +120,20 @@
             prepareRun : true,
             run : true,
             destroy : true
+        }
+    };
+
+    /**
+     * Alle Module sind geladen. GD ist bereit.
+     * @memberOf GD
+     *
+     * @param {Function} callback
+     */
+    GD.isReady = function(callback){
+        if(GD._isReady){
+            callback();
+        }else{
+            GD.Core.Event.add("gd:load", callback);
         }
     };
 
@@ -312,6 +338,26 @@
                 }
             });
         }
+    };
+
+    /**
+     * Verkehrt Keys und Values von einem Array
+     * Methode wird von spaeter von Convert uebernommen.
+     *
+     * @param {Array} trans
+     * @returns {Array}
+     */
+    GD.arrayFlip = function(trans){
+        var key, tmp_ar = {};
+
+        for ( key in trans ){
+            if ( trans.hasOwnProperty( key ) )
+            {
+                tmp_ar[trans[key]] = key;
+            }
+        }
+
+        return tmp_ar;
     };
 
     /**

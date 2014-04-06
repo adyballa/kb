@@ -112,6 +112,30 @@
             }
         }
     },
+    
+    /**
+     * X-Browser: Prueft, ob context Eventlistener hat
+     * 
+     * @memberOf GD.Core.Event
+     * @private
+     * 
+     * @param {Object} context
+     * @param {Array}
+     *            eventName Auf dieses Event wird reagiert
+     */
+    canListening2Events = function(context, eventName){
+        if (("addEventListener" in context) || ("attachEvent" in context)){
+            return true;
+        }else{
+            for(var i=eventName.length; i--;){
+                if(!("on"+eventName[i] in context)){
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    },
 
     /**
      * globales Subscribing von Context auf ein Event
@@ -175,7 +199,7 @@
         getSubscribers(eventName).every(function(element){
             /* Call our observers, passing along arguments */
             element.handler.call(element.context, event);
-            return event.canceled();
+            return !event.canceled();
         });
         return true;
     },
@@ -194,7 +218,8 @@
         if(Array.isArray(res)){
             return res;
         }else{
-            GD.Core.Error.error("No subscriber found for "+eventName, res);
+            GD.Log('error').warn("No subscriber found for "+eventName, res);
+            return [];
         }
     };
     
@@ -330,29 +355,32 @@
      * @param {GD.Core.Fabric} fabric
      */
     GD.Core.Event.mixin = function(obj, fabric) {
-        var uri = fabric.nsURI(true)+":";
+        var uri = fabric.nsURI(true)+":",
+        buildEventName = function(eventName, uri){
+            return (eventName.indexOf(":") === -1) ? uri+eventName : eventName;
+        };
+        
         obj.eventDispatch = (function(obj, uri){
             return function(eventName, eventInitDict){
-                dispatch(uri+eventName, obj, eventInitDict);
+                dispatch(buildEventName(eventName, uri), obj, eventInitDict);
             };
         }(obj, uri)); 
-        obj.eventDispatch.uri = uri;
 
         obj.eventRemove = (function(obj, uri){
             return function(eventName, handler, fCapture){
-                GD.Core.Event.remove(obj, uri+eventName, handler, fCapture);
+                GD.Core.Event.remove(buildEventName(eventName, uri), handler, obj, fCapture);
             };
         }(obj, uri));
 
         obj.eventAdd = (function(obj, uri){
             return function(eventName, handler, fCapture){
-                GD.Core.Event.add(obj, uri+eventName, handler, fCapture);
+                GD.Core.Event.add(buildEventName(eventName, uri), handler, obj, fCapture);
             };
         }(obj, uri));
 
         obj.eventDelegate = (function(obj, uri){
             return function(eventName, handler, triggers, fCapture){
-                GD.Core.Event.delegate(obj, uri+eventName, triggers, handler, fCapture);
+                GD.Core.Event.delegate(buildEventName(eventName, uri), triggers, handler, obj, fCapture);
             };
         }(obj, uri));
     };
@@ -361,21 +389,24 @@
      * X-Browser: Entfernt Event-listener
      * @memberOf GD.Core.Event
      * 
-     * @param {Object|Node}
-     *            context DomNode, die mit dem Event erweitert wird oder Context
-     *            fuer globalen Observer
      * @param {(string|Array)}
      *            eventName Auf dieses Event wird reagiert
      * @param {GD.Core.Event.EventListener}
      *            handler Funktion die entfernt werden soll
+     * @param {Object}
+     *            context DomNode, die mit dem Event erweitert wird oder Context
+     *            fuer globalen Observer
      * @param {boolean}
      *            fCapture default false
      */
-    GD.Core.Event.remove = function(context, eventName, handler, fCapture) {
+    GD.Core.Event.remove = function(eventName, handler, context, fCapture) {
+        if(!context){
+            context = GD.global;
+        }
         if (typeof eventName === "string") {
             eventName = [ eventName ];
         }
-        if (context instanceof Node) {
+        if(canListening2Events(context, eventName)){
             nodeRemove(context, eventName, handler, fCapture);
         } else {
             remove(context, eventName, handler);
@@ -387,21 +418,27 @@
      * eventName hinzu. Ohne ON
      * @memberOf GD.Core.Event
      * 
-     * @param {Object|Node}
-     *            context DomNode, die mit dem Event erweitert wird oder Context
-     *            fuer globalen Observer
      * @param {(string|Array)}
      *            eventName Auf dieses Event wird reagiert
      * @param {GD.Core.Event.EventListener}
      *            handler Diese Funktion/Handler wird ausgefuehrt
+     * @param {Object}
+     *            context DomNode, die mit dem Event erweitert wird oder Context
+     *            fuer globalen Observer
      * @param {boolean}
      *            fCapture default false
      */
-    GD.Core.Event.add = function(context, eventName, handler, fCapture) {
+    GD.Core.Event.add = function(eventName, handler, context, fCapture) {
+        var fSubscribe = true;
+        if(!context){
+            fSubscribe = false;
+            context = GD.global;
+            
+        }
         if (typeof eventName === "string") {
             eventName = [ eventName ];
         }
-        if (context instanceof Node) {
+        if(fSubscribe && canListening2Events(context, eventName)){
             nodeSubscribe(context, eventName, handler, fCapture);
         } else {
             subscribe(context, eventName, handler);
@@ -412,13 +449,16 @@
      * Dispatches Event
      * @memberOf GD.Core.Event
      *
-     * @param {Object|Node} context
      * @param {String} eventName
+     * @param {Object|Node} context
      * @param {Object} eventInitDict
      * @returns {boolean}
      */
-    GD.Core.Event.dispatch = function(context, eventName, eventInitDict){
+    GD.Core.Event.dispatch = function(eventName, context, eventInitDict){
         var event;
+        if(!context){
+            context = GD.global;
+        }
         if (context instanceof Node) {
             if (eventName instanceof Event) {
                 event = eventName;
@@ -441,7 +481,10 @@
      * @param {Function} handler Eventhandler
      * @returns {boolean} fCapture
      */
-    GD.Core.Event.delegate = function(context, eventName, triggers, handler, fCapture){
+    GD.Core.Event.delegate = function(eventName, triggers, handler, context, fCapture){
+        if(!context){
+            context = GD.global;
+        }
         GD.Core.Event.add(context, eventName, 
             function(e){
                 var e = GD.Event.event(e),
@@ -463,11 +506,12 @@
      */
     GD.Core.Event.ready = function(readyFn) {
         var caller = null;
+/*
         if (readyBound) {
             return;
         }
         readyBound = true;
-
+*/
         // Mozilla, Opera and webkit nightlies currently support this event
         if (GD.doc.addEventListener) {
             caller = function() {
@@ -475,7 +519,7 @@
                 readyFn();
             };
             // Use the handy event callback
-            GD.Core.Event.add(GD.doc, "DOMContentLoaded", caller);
+            GD.Core.Event.add("DOMContentLoaded", caller, GD.doc);
 
             // If IE event model is used
         } else if (GD.doc.attachEvent) {
@@ -487,11 +531,10 @@
             };
             // ensure firing before onload,
             // maybe late but safe also for iframes
-            GD.Core.Event.add(GD.doc, "onreadystatechange", caller);
+            GD.Core.Event.add("onreadystatechange", caller, GD.doc);
         }
-
         // A fallback to window.onload, that will always work
-        GD.Core.Event.add(window, "load", readyFn);
+//        GD.Core.Event.add("load", readyFn, window);
     };
 
     /**
@@ -500,16 +543,14 @@
      * 
      * @memberOf GD.Core.Event
      * 
-     * @param {HtmlElement}
-     *            node
-     * @param {GD.Core.Event.EventListener}
-     *            handler
+     * @param {HtmlElement} node
+     * @param {GD.Core.Event.EventListener} handler
      * @returns {boolean}
      */
     GD.Core.Event.mouseWheel = function(node, handler) {
         GD.Core.Event.add(node, [ "DOMMouseScroll", "mousewheel" ], function(e) {
             var delta = 0;
-            GD.Core.Dbg.dir(e);
+            GD.Log().debug(e);
             // normalize the delta
             if (e.wheelDelta) {
                 // IE and Opera
@@ -527,46 +568,25 @@
         return true;
     };
 
-    /**
-     * Init-methode fuer das gesamte Framework
-     * 
-     * @memberOf GD
-     * 
-     * @param {boolean}
-     *            IsInProduction
-     */
-    GD.INIT = function(IsInProduction) {
-        var i = 0, _init = function() {
-            if (!IsInProduction && GD.doc.body && GD.doc.body.onload) {
-                // initFct = GD.doc.body.onload;
-                // GD.doc.body.onload = null;
-            }
-            while (GD.doc.readyState === "complete") {
-                // initFct();
-                GD.runLifeCycle('init');
-                GD.runLifeCycle('prepareRun');
-                GD.runLifeCycle('run');
-                return true;
-            }
-            i++;
-            if (i < 300) {
-                window.setTimeout(_init, 100);
-            } else {
-                throw new Error("Timeout exceeded");
-            }
-        };
+    /* verankert Event-Mixin fuer alle Objekte */
+    GD.Core.Fabric.mixins.obj.add("development", GD.Core.Event.mixin);
 
-        _init();
-    };
-
+    /* --------------------------------------------
+     * Initialize important GD-Events
+     * -------------------------------------------- */
+    
     GD.Core.Event.ready(function() {
-        GD.INIT(GD.isRunning('production'));
+        while (GD.doc.readyState === "complete") {
+            // initFct();
+            GD.runLifeCycle('init');
+            GD.runLifeCycle('prepareRun');
+            GD.runLifeCycle('run');
+            return true;
+        }
     });
 
     /* establish DESTROY lifecycle */
-    GD.Core.Event.add(window, 'unload', function() {
+    GD.Core.Event.add('unload', function() {
         GD.runLifeCycle('destroy');
-    });
-    
-    GD.Core.Fabric.mixins.obj.add("development", GD.Core.Event.mixin);
+    }, window);
 })(GD);

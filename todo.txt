@@ -1,0 +1,39 @@
+Must:
++ Refactor Code: Verbose/Logging / log-objekt
++ DI: Production-modi
++ main-loader: load min/produktionsdatei aus Konfiguration im Produktionsmodi oder datei
++ Grunt: Doku prüfen
++ Grunt: Test reparieren
++ Grunt: Verbose and log rausnehmen
++ Code übertragen
++ Konfiguration einfuegen
++ Refactor Code: DI
++ Refactor Code: Events
+	+ Load-Event (main)
+
+
+Nice2Have:
++ main-loader: Server-modi
+
+--- Error:
++ refactor: error
++ refactor: log
+
+
++ core/dev extras raus (info.js)
++ core/error.js raus
++ Formatter rein
++ Formatter test
+
+
+Done:
++ main-loader: Sync-mode
++ Log-Pattern nach Zend:
+	- jedes Objekt hat 1 log hat n Writer
+	- Serverity
+	- Konfiguration können pro Writer eingestellt werden. setConfig()
+	- Konfiguration wird im Log als Fallback festgehalten. setConfig()
+	- Objekte brauchen mixin setConfig. Dort auch Event triggern. 
+	So soll es laufzeitfähig werden.
+	- Writer sollen nach Interface schnell und bequem entwickelt werden.
+	- Writer sollen immer hinzu und entfernt werden können. addWriter(), removeWriter()

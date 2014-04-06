@@ -1,0 +1,1 @@
+alert("Aus Konfigurations global settings");

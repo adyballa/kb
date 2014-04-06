@@ -91,6 +91,25 @@ if (!Object.create) {
     };
 }
 
+if (!Object.defineProperty) {
+    
+    /**
+     * Erstellt Eigenschaft name
+     * in Objekt obj. Ist kein echter Ersatz
+     *
+     * @param {Object} obj
+     * @param {String} name
+     * @param {Object} properties
+     */
+    Object.defineProperty = function(obj, name, properties){
+        if("value" in properties){
+            obj[name] = properties.value;
+        }else{
+            obj[name] = null;
+        }
+    };
+}
+
 // Production steps of ECMA-262, Edition 5, 15.4.4.18
 // Reference: http://es5.github.com/#x15.4.4.18
 if (!Array.prototype.forEach) {

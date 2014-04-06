@@ -12,9 +12,6 @@ function(lib, clss) {
      * @memberOf GD.Lib.Test.Parent
      */
     clss.constructor = function() {
-        var _mssg = function(mssg) {
-            console.log(mssg);
-        };
 
         /**
          * Private Properties.
@@ -40,9 +37,7 @@ function(lib, clss) {
          * @memberOf GD.Lib.Test.Parent
          */
         this.messaging = function(mssg) {
-            if (this.config.verbose) {
-                _mssg(mssg);
-            }
+            this.log.info(mssg);
         };
 
         if (this.config.myTest) {
@@ -53,7 +48,7 @@ function(lib, clss) {
     };
 
     /**
-     * @memberOf GD.Lib.Test.Parent
+     * @memberOf GD.Lib.Test.Parent#
      */
     clss.prototype.overwriteTest = function() {
         this._.sharedProperties++;
@@ -62,7 +57,7 @@ function(lib, clss) {
     };
 
     /**
-     * @memberOf GD.Lib.Test.Parent
+     * @memberOf GD.Lib.Test.Parent#
      */
     clss.prototype.methodFromParent = function() {
         this._.sharedProperties++;
@@ -71,7 +66,7 @@ function(lib, clss) {
     };
 
     /**
-     * @memberOf GD.Lib.Test.Parent
+     * @memberOf GD.Lib.Test.Parent#
      */
     clss.prototype._privateMethode = function() {
         this.messaging("nicht verfügbar");

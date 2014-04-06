@@ -75,12 +75,26 @@
          */
         tasks : {},
         
-        task : "",
-
         /**
-         * Sind alle Module geladen?
+         * Current task - set via data-task
+         * @type {String}
          */
-        isSave : false,
+        task : "",
+        
+        /**
+         * Current production-file - set via data-production-file
+         * @type {String}
+         */
+        productionFile : "",
+        
+        /**
+         * Current async - set via data-async
+         * if async is set true, loading all files
+         * is not finished after the main-script-tag
+         *
+         * @type {bool}
+         */
+        async : false,
 
         /**
          * Settings aus den JSON-Defintionen
@@ -93,7 +107,7 @@
         root : "",
 
         /**
-         * Loggt
+         * Logging
          *
          * @param {mixed} mssg
          * @param {String} method
@@ -112,13 +126,11 @@
         /**
          * loads script
          * 
-         * @memberOf GD
+         * @memberOf Load
          * @private
          * 
-         * @param {String}
-         *            fileName
-         * @param {Function}
-         *            callback
+         * @param {String} fileName
+         * @param {Function} callback
          */
         loadScript : function(fileName, callback, fragment, i, async) {
             // get some kind of XMLHttpRequest
@@ -161,17 +173,25 @@
                         GD.Config.Core.root = this.root;
                     }
                     if (i === j - 1) {
-                        this.isSave = true;
-                        this.verbose("GUID ist "+this.guid);
-                        this.client.open('GET', 'http://' + this.settings.host + ':' + this.settings.nodejsserver.port +
-                                "/wait/modulesAreLoaded?id=" + this.guid, false);
-                        this.client.send();
+                        GD._isReady = true;
+                        GD.Core.Event.dispatch("gd:load");
+                        if(!this.async){
+                            this.verbose("GUID ist "+this.guid);
+                            this.client.open('GET', 'http://' + this.settings.host + ':' + this.settings.nodejsserver.port +
+                                    "/wait/modulesAreLoaded?id=" + this.guid, false);
+                            this.client.send();
+                        }
                         this.verbose("LOAD is save", "info");
                         // GD.INIT(false);
                     }
                     if(file === "core/dependency_injection.js"){
                         this.verbose("GUID ist "+this.guid);
                         this.files.hasDi = true;
+                        if(this.async){
+                            this.client.open('GET', 'http://' + this.settings.host + ':' + this.settings.nodejsserver.port +
+                                    "/wait/modulesAreLoaded?id=" + this.guid, false);
+                            this.client.send();
+                        }
                         
                         while(i<j-1){
                             i++;
@@ -224,6 +244,27 @@
         },
 
         /**
+         * @memberOf Load
+         *
+         * setzt das Produkionsfile nach folgender Regel:
+         * Das Attribut "data-production-file" im Main-script-tag
+         * hat Vorrang. Danach wird untersucht ob in der Modul-konfiguration
+         * die Produktionsdatei gesetzt ist, wenn nur ein Modul geladen wird.
+         * Als letztes wird in den Settings nach production_file gesucht.
+         */
+        setProductionFile : function(){
+            this.productionFile = this.script.getAttribute('data-production-file');
+            if(!this.productionFile){
+                if(this.task.indexOf(",")===-1){
+                    this.productionFile = this.definition.modules[this.task].production_file;
+                }
+                if(!this.productionFile){
+                    this.productionFile = this.settings.production_file;
+                }
+            }
+        },
+
+        /**
          * Initialisiert wichtige Variablen
          */
         init : function(){
@@ -238,6 +279,9 @@
             this.definition = JSON.parse(this.client.responseText);
             this.settings = this.definition['settings'];
             this.task = this.script.getAttribute('data-task');
+            this.async = this.script.getAttribute('data-async');
+            this.async = (this.async && (this.async.toLowerCase() === "true" || this.async === "1")) ? true : false;
+            this.setProductionFile();
             global.__LIB__ = this.settings.libname;
             global[global.__LIB__] = function(){};
             global[global.__LIB__].Config = global[configName];
@@ -274,7 +318,7 @@
         waitUntilAllModulesAreLoaded : function() {
             this.verbose("waitUntilAllModulesAreLoaded GUID:"+this.guid);
             document.writeln("<script src=\"http://" + this.settings.host + ":" + this.settings.nodejsserver.port +
-                    "/wait/loadIsFinished?id=" + this.guid + "\"></script>");
+                    "/wait/loadIsFinished?id=" + this.guid+"\"></script>");
         }
     };
 
@@ -286,6 +330,11 @@
         Load.getModules();
         Load.load();
         Load.waitUntilAllModulesAreLoaded();
+    }
+    if(Load.settings.runningMode == "production"){
+        Load.loadScript("../"+Load.productionFile, function(){}, Load.script, 0, Load.async);
+        GD._isReady = true;
+        GD.Core.Event.dispatch("gd:load");
     }
     // Exportieren?
     // global.LOAD = LOAD;

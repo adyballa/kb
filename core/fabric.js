@@ -73,6 +73,7 @@
                         ns.parents[i].fabric,
                         constructParams);
             obj = GD.extend(parent, obj, false, true);
+            GD.extend(parent.config, obj.config, true, true);
             obj.parent = parent;
         }
 //        if('parent' in ns){

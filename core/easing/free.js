@@ -128,7 +128,7 @@
             this.ease = GD.Core.Easing.Free[translate[ease]];
             return this;
         }
-        GD.Core.Error.exception(new RangeError(ease+' ist kein gueltiger Ease-name'));
+        this.error.crit(ease+' ist kein gueltiger Ease-name');
     };
 
     /**
