@@ -73,3 +73,17 @@ synchron geladen. Dafür muss ein Nodeserver gestartet werden. Live wird eine mi
 * Namensraeume sind Funktionen mit gewissen Eigenschaften. Sie werden beim Laden 
 der Datei aus der Konfiguration erzeugt und mitgegeben.
 * Gleichzeitig wird aus ihr ein Depenency-Container erzeugt.
+
+
+** Logging **
+---------------------
+Nach dem Vorbild von Zend-Log wird allen Objekten nach den Ajax-NS ein Mixin-objekt
+log und error mitgegeben. Die zugrundeliegenden Log-objekte sind mit GD.Log() und 
+GD.Log("error") zu erreichen. Error ist in allen Modis vorhanden, log nur in "development".
+Diese Logs besitzen n Writer, die ein gewisses Interface besitzen.
+Übergreifend gibt es numerische Werte die die Log-prioritaet repraesentieren.
+Je hoeher die Prioritaet, desto weniger wichtig ist das Log.
+Alle GD-Objekte koennen mit einer Prioritaet konfiguriert werden,
+so dass das Objekt mit seinem mixin-objekt nur gewisse Nachrichten loggt.
+Die Writer besitzen ebenfalls Prioritaeten.
+Diese werden in den Konfigurationsdateien bei den Modis festgehalten.
